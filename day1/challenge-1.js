@@ -1,4 +1,4 @@
-const rawData = require("./day1-data.js");
+const rawData = require("./challenge-1-data.js");
 const dataArray = rawData.rawInputData.split("\n");
 
 // convert all strings to numbers
