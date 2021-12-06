@@ -2,80 +2,81 @@ const _ = require("lodash");
 const data = require("./data.js");
 const dataArray = data.data.split("\n");
 
-const count = {};
-let oxygenRating = [];
-let co2Rating = [];
+const sampleData = `00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010`.split("\n");
 
-dataArray.forEach((element) => {
-  const row = element.split("");
-  row.forEach((position, index) => {
-    if (count[index] === undefined) {
-      count[index] = {
-        0: [],
-        1: [],
-      };
+const doTheThing = (dataArray) => {
+  let oxygenRating = 0;
+  let co2Rating = 0;
+
+  const indexCount = _.range(1, dataArray[0].length); // array from 1 to length of first row
+
+  let count = { 0: [], 1: [] };
+
+  const resetCount = () => {
+    count = { 0: [], 1: [] };
+  };
+
+  const setCount = (data, position) => {
+    resetCount();
+    data.forEach((element) => {
+      const row = element.split("");
+      row.forEach((r, i) => {
+        if (i === position) {
+          if (r === "1" || r === 1) {
+            count[1].push(row.join(""));
+          } else {
+            count[0].push(row.join(""));
+          }
+        }
+      });
+    });
+    console.log(count);
+    console.log("setCount complete.");
+  };
+
+  // oxygen
+  setCount(dataArray, 0);
+  indexCount.forEach((i) => {
+    if (count[1].length >= count[0].length) {
+      setCount(count[1], i);
+    } else {
+      setCount(count[0], i);
     }
-    count[index][position].push(row);
+
+    oxygenRating = count[1][0];
   });
-});
 
-for (const key in count) {
-  if (count[key]["1"].length >= count[key]["0"].length) {
-    oxygenRating.push("1");
-    co2Rating.push("0");
-  } else {
-    oxygenRating.push("0");
-    co2Rating.push("1");
-  }
-}
+  // carbon dioxide
+  setCount(dataArray, 0);
+  indexCount.forEach((i) => {
+    if (count[0].length === 1 && count[1].length === 1) {
+      // stop
+      co2Rating = count[0][0];
+    }
 
-// console.log(oxygenRating);
-// console.log(co2Rating);
+    if (count[0].length <= count[1].length) {
+      setCount(count[0], i);
+    } else {
+      setCount(count[1], i);
+    }
+  });
 
-// 010111100100
-const oxygenRatingBinary = _.flatten(
-  _.intersection(
-    count[0][0],
-    count[1][1],
-    count[2][0],
-    count[3][1],
-    count[4][1],
-    count[5][1],
-    count[6][1],
-    count[7][0],
-    count[8][0],
-    count[9][1],
-    count[10][0],
-    count[11][0]
-  )
-).join("");
-const oxygenParsed = parseInt(oxygenRatingBinary, 2);
-console.log(oxygenParsed);
+  console.log(oxygenRating);
+  console.log(co2Rating);
+  console.log(parseInt(oxygenRating, 2) * parseInt(co2Rating, 2));
+};
 
-// console.log(count[8][0].length, count[8][1].length);
-// console.log(count[9][0].length, count[9][1].length);
+doTheThing(dataArray);
 
-// 101000011011
-const co2RatingBinary = _.intersection(
-  count[0][1],
-  count[1][0],
-  count[2][1],
-  count[3][0],
-  count[4][0],
-  count[5][0],
-  count[6][0],
-  count[7][1]
-  //   count[8][1]
-  //   count[9][0]
-  //   count[10][1]
-  //   count[11][1]
-);
-// console.log(co2RatingBinary);
-// const co2Parsed = parseInt(co2RatingBinary, 2);
-const co2Parsed = parseInt(
-  ["1", "0", "1", "0", "0", "0", "0", "1", "0", "0", "0", "1"].join(""),
-  2
-);
-console.log(co2Parsed);
-
-console.log(oxygenParsed * co2Parsed);
+// console.log(parseInt("011001100111", 2) * parseInt("101010000100", 2));
