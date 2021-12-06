@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Xiupan/advent-of-code-2021/issues"
   },
-  "homepage": "https://github.com/Xiupan/advent-of-code-2021#readme"
+  "homepage": "https://github.com/Xiupan/advent-of-code-2021#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }
